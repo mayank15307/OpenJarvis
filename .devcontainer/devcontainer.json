@@ -8,5 +8,6 @@
       "onAutoForward": "openBrowser"
     }
   },
-  "postCreateCommand": "python --version"
+  "postCreateCommand": "python --version",
+  "postStartCommand": "nohup python -m http.server 8000 --directory jarvis >/tmp/jarvis-http.log 2>&1 &"
 }
