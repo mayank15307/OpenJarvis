@@ -18,6 +18,16 @@ SYSTEM_INSTRUCTION = (
 )
 
 class Handler(SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/api/health":
+            self.send_json(200, {
+                "status": "ok",
+                "model": MODEL,
+                "gemini_key_configured": bool(os.environ.get("GEMINI_API_KEY")),
+            })
+            return
+        super().do_GET()
+
     def do_POST(self):
         if self.path != "/api/chat":
             self.send_json(404, {"error": "Not found"})
@@ -62,12 +72,35 @@ class Handler(SimpleHTTPRequestHandler):
                 with urllib.request.urlopen(req, timeout=45) as response:
                     result = json.loads(response.read().decode("utf-8"))
             except urllib.error.HTTPError as exc:
+                # Show Google's safe error message so setup problems can be diagnosed.
+                # The API key is sent only in a request header and is never returned.
+                detail = ""
+                try:
+                    error_data = json.loads(exc.read().decode("utf-8"))
+                    detail = error_data.get("error", {}).get("message", "")
+                except (ValueError, UnicodeDecodeError, AttributeError):
+                    pass
                 if exc.code == 429:
-                    self.send_json(429, {"error": "Gemini's free-tier limit may have been reached. Wait a while and try again."})
+                    message = "Gemini free-tier rate limit reached. Wait before trying again."
                 elif exc.code in (401, 403):
-                    self.send_json(502, {"error": "Gemini rejected the key. Check that it is valid and Gemini API access is enabled."})
+                    message = "Gemini rejected the API key or API access. Check the key and API access settings."
+                elif exc.code == 404:
+                    message = "Gemini model or endpoint was not found. Check the configured model name."
                 else:
-                    self.send_json(502, {"error": "Gemini service error (" + str(exc.code) + "). Please try again later."})
+                    message = "Gemini API returned HTTP " + str(exc.code) + "."
+                if detail:
+                    message += " Details: " + detail[:500]
+                self.send_json(502, {"error": message})
+                return
+            except urllib.error.URLError as exc:
+                reason = getattr(exc, "reason", None)
+                if isinstance(reason, TimeoutError):
+                    self.send_json(504, {"error": "The connection to Gemini timed out. Please try again."})
+                else:
+                    self.send_json(502, {"error": "JARVIS could not connect to Gemini. Check the Codespace internet connection and try again."})
+                return
+            except TimeoutError:
+                self.send_json(504, {"error": "The connection to Gemini timed out. Please try again."})
                 return
             candidates = result.get("candidates", [])
             parts = candidates[0].get("content", {}).get("parts", []) if candidates else []
@@ -78,8 +111,10 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_json(200, {"reply": answer})
         except (ValueError, json.JSONDecodeError):
             self.send_json(400, {"error": "I couldn't read that request. Please try again."})
-        except Exception:
-            self.send_json(500, {"error": "JARVIS encountered an unexpected server error."})
+        except Exception as exc:
+            # Keep technical details in the server terminal, never in the browser response.
+            print("JARVIS server error:", type(exc).__name__, str(exc))
+            self.send_json(500, {"error": "JARVIS encountered an unexpected server error. Check the server terminal for the diagnostic message."})
 
     def send_json(self, status, data):
         body = json.dumps(data).encode("utf-8")
