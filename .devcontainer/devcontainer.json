@@ -9,5 +9,5 @@
     }
   },
   "postCreateCommand": "python --version",
-  "postStartCommand": "nohup python -m http.server 8000 --directory jarvis >/tmp/jarvis-http.log 2>&1 &"
+  "postStartCommand": "nohup python server.py >/tmp/jarvis-http.log 2>&1 &"
 }
