@@ -43,6 +43,29 @@
     try { localStorage.setItem(NOTES_KEY, notes.value); $("saveStatus").textContent = "Saved on this device"; }
     catch { $("saveStatus").textContent = "Could not save — browser storage may be full"; }
   });
+  async function checkServerHealth() {
+    const status = $("aiStatus");
+    const answer = $("answer");
+    try {
+      const response = await fetch("/api/health", { cache: "no-store" });
+      if (!response.ok) throw new Error("Health check failed (" + response.status + ").");
+      const data = await response.json();
+      if (data.gemini_key_configured) {
+        status.textContent = "Key detected · " + data.model;
+        status.className = "ready";
+        answer.textContent = "Server online · Gemini key detected · " + data.model;
+      } else {
+        status.textContent = "API key missing";
+        status.className = "not-ready";
+        answer.textContent = "Server online, but GEMINI_API_KEY is not available. Restart the Codespace after checking its secret.";
+      }
+    } catch (error) {
+      status.textContent = "Server check failed";
+      status.className = "not-ready";
+      answer.textContent = error.message || "Could not check the JARVIS server.";
+    }
+  }
+
   function addChatMessage(role, text) {
     const line = document.createElement("div");
     line.style.cssText = "padding:10px 12px;margin:8px 0;border-radius:10px;white-space:pre-wrap;line-height:1.55;font-size:13px;background:" + (role === "user" ? "#20334e" : "#142238") + ";color:#edf3ff;";
@@ -69,4 +92,5 @@
     } finally { button.disabled = false; button.textContent = "Ask"; input.focus(); }
   });
   renderTasks();
+  checkServerHealth();
 })();
