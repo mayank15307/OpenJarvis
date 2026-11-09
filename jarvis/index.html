@@ -23,7 +23,7 @@ textarea.field{resize:vertical;min-height:150px;line-height:1.6}.assistant-box{b
  <div class="brand"><div class="orb">✧</div><div><div class="eyebrow">PERSONAL AI PROJECT</div><h1>J.A.R.V.I.S.</h1></div></div>
  <div class="top-right"><span class="pill"><span class="dot"></span>Local dashboard online</span><span class="pill">PHASE 1 · FOUNDATION</span></div>
 </header>
-<section class="hero"><div class="eyebrow">WELCOME BACK</div><h2>Your personal control center.</h2><p>A safe first version for organizing tasks and notes. The AI brain and connected services are not enabled yet; we'll add them only after their permissions and safeguards are ready.</p></section>
+<section class="hero"><div class="eyebrow">WELCOME BACK</div><h2>Your personal control center.</h2><p>A personal control center with Gemini chat connected through a private server-side key. Connected services and computer control remain disabled.</p></section>
 <section class="stats">
  <div class="stat"><div class="label">TOTAL TASKS</div><div class="value" id="totalCount">0</div></div>
  <div class="stat"><div class="label">COMPLETED</div><div class="value" id="doneCount">0</div></div>
@@ -40,16 +40,17 @@ textarea.field{resize:vertical;min-height:150px;line-height:1.6}.assistant-box{b
   </section>
  </main>
  <aside>
-  <section class="panel"><div class="panel-head"><h3>Ask JARVIS</h3><span class="sub">Demo only</span></div>
-   <div class="assistant-box"><p>This is a placeholder interface, not a connected AI. Try asking what this dashboard can currently do.</p>
-    <form id="askForm" class="row"><input class="field" id="askInput" maxlength="240" placeholder="Type a question..." required><button class="primary">Ask</button></form>
-    <div class="assistant-response" id="answer" aria-live="polite">JARVIS is waiting. AI connection: not configured.</div>
+  <section class="panel"><div class="panel-head"><h3>Ask JARVIS</h3><span class="sub">Gemini AI · chat only</span></div>
+   <div class="assistant-box"><p>Chat with Gemini. JARVIS is chat-only for now; it cannot control your accounts or computer.</p>
+    <div id="chatMessages" aria-live="polite" style="max-height:300px;overflow:auto;margin-bottom:12px"><div class="assistant-response">JARVIS is online. Ask me something.</div></div>
+    <form id="askForm" class="row"><input class="field" id="askInput" maxlength="2000" placeholder="Message JARVIS..." required><button class="primary">Ask</button></form>
+    <div class="assistant-response" id="answer" aria-live="polite">Ready · Gemini free-tier model configured.</div>
    </div>
   </section>
-  <section class="panel"><div class="panel-head"><h3>System connections</h3><span class="sub">Not connected</span></div>
+  <section class="panel"><div class="panel-head"><h3>System connections</h3><span class="sub">Current status</span></div>
    <div class="status-list">
     <div class="status-row"><span>Dashboard</span><span class="ready">Online</span></div>
-    <div class="status-row"><span>AI brain</span><span class="not-ready">Not configured</span></div>
+    <div class="status-row"><span>AI brain</span><span class="ready">Gemini configured</span></div>
     <div class="status-row"><span>Long-term memory</span><span class="not-ready">Not configured</span></div>
     <div class="status-row"><span>Uplika</span><span class="not-ready">Not connected</span></div>
     <div class="status-row"><span>Voice control</span><span class="not-ready">Not configured</span></div>
