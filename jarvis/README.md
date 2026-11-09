@@ -1,29 +1,42 @@
 # JARVIS Custom
 
-A lightweight, browser-first personal automation assistant built on top of OpenJarvis.
+A browser-first personal assistant project built on top of the OpenJarvis repository. Custom work stays on the `jarvis-custom` branch.
 
-## Current milestone
+## Current milestone: Phase 1 — Control Center
 
-This first milestone is a safe task dashboard. It stores tasks in the browser using local storage. It does not execute shell commands, access accounts, publish content, submit campaigns, or spend money.
+The dashboard currently provides:
+- A task board with add, complete, and delete actions.
+- Task counts for total, completed, and remaining work.
+- A project-notes area that autosaves in the current browser.
+- A clearly labelled demo assistant panel. It is **not** connected to an AI model.
+- A status panel showing which integrations are not configured.
 
-## Run in GitHub Codespaces
+Tasks and notes use browser local storage. They remain on this browser/device and are not synced to a server.
 
-1. Open this repository in GitHub.
-2. Switch to the `jarvis-custom` branch.
-3. Create a Codespace from this branch.
-4. In the Codespaces terminal, run `python -m http.server 8000 --directory jarvis`.
-5. Open the forwarded port 8000 in the browser.
+## Open in GitHub Codespaces
+
+1. Open this repository and select the `jarvis-custom` branch.
+2. Create/open a Codespace for that branch.
+3. The development container starts a simple web server on port 8000.
+4. Open the forwarded port labelled **JARVIS dashboard**.
+
+If the server is not running, open the Codespaces terminal and run:
+
+```bash
+python -m http.server 8000 --directory jarvis
+```
 
 Python runs inside the cloud Codespace, not on your laptop.
 
-## Next milestones
+## Planned milestones
 
-- Add a secure backend and persistent task database.
-- Add an AI provider through server-side secrets (never put API keys in browser code).
-- Add explicit, limited tools for approved workflows.
-- Connect Uplika after verifying its supported API/actions.
-- Add monitoring, audit logs, and optional mobile alerts.
+1. **Foundation:** dashboard, local tasks, and notes.
+2. **AI brain:** connect a model through a secure server-side backend. Never place API keys in browser JavaScript or commit them to Git.
+3. **Memory:** add user-controlled, inspectable persistent memory.
+4. **Tools:** add narrowly scoped tools with confirmation before consequential actions.
+5. **Integrations:** investigate supported Uplika actions and connect only with explicit permissions.
+6. **Voice and desktop:** add after the backend and security model are stable.
 
 ## Safety model
 
-Routine, reversible actions can be automated within configured limits. Publishing, campaign submission, account/security changes, purchases, and other consequential actions require an approval rule. Every action should be logged.
+This prototype does not access accounts, publish content, send messages, run arbitrary commands, or spend money. Future external actions must be permission-scoped, logged, and require user approval where they affect accounts, people, money, or public content.
